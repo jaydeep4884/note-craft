@@ -1,12 +1,14 @@
-// App.js
+// App.jsx
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
-import Header from "./Components/Header";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./Components/dashboard";
 
 const App = () => {
   return (
     <BrowserRouter>
-      <Header />
+      <Routes>
+        <Route path="/*" element={<Dashboard />} />
+      </Routes>
     </BrowserRouter>
   );
 };
