@@ -18,13 +18,9 @@ import {
   Category as CategoryIcon,
   ControlPointDuplicate as SubCategoryIcon,
   HelpOutline as HelpIcon,
-  Menu as MenuIcon,
   MeetingRoom as MeetingRoomIcon,
 } from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "@fontsource/roboto/700.css";
-
-const drawerWidth = 240;
 
 const navItems = [
   { text: "Dashboard", icon: <DashboardIcon />, path: "/Dashboard" },
@@ -38,22 +34,19 @@ const Header = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Toggle mobile drawer
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-  // Handle Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
 
-  // Drawer Component
   const drawer = (
-    <List sx={{ paddingTop: 0 }}>
-      <ListItem sx={{ backgroundColor: "#2F3C7E", padding: 2 }}>
+    <List className="pt-0">
+      <ListItem className="text-black p-5">
         <ListItemText
           primary="Interview Portal"
-          sx={{ color: "white", fontWeight: "bold" }}
+          className="!text-black !font-bold"
         />
       </ListItem>
       {navItems.map(({ text, icon, path }) => (
@@ -62,7 +55,9 @@ const Header = ({ children }) => {
           disablePadding
           component={Link}
           to={path}
-          sx={{ textDecoration: "none", color: "inherit" }}
+          className={`no-underline text-inherit ${
+            location.pathname === path ? "!bg-gray-200" : ""
+          }`}
           onClick={handleDrawerToggle}
         >
           <ListItemButton>
@@ -75,27 +70,18 @@ const Header = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box className="flex">
       <CssBaseline />
       <AppBar
         position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-          backgroundColor: "#2F3C7E",
-        }}
+        className="w-[calc(100%-240px)] !ml-[240px] !bg-white !text-black !shadow-md"
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Dashboard {location.pathname}
+        <Toolbar className="flex justify-between">
+          <Typography variant="h6" className="text-black font-semibold">
+            Interview Portal -{" "}
+            {location.pathname === "/"
+              ? "Dashboard"
+              : location.pathname.replace("/", "")}
           </Typography>
           <IconButton color="inherit" onClick={handleLogout}>
             <MeetingRoomIcon />
@@ -103,37 +89,20 @@ const Header = ({ children }) => {
         </Toolbar>
       </AppBar>
 
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-      >
-        {/* Mobile Drawer */}
+      <Box component="nav" className="w-[240px] flex-shrink-0">
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: "block", sm: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
+          className="block sm:hidden [&_.MuiDrawer-paper]:w-[240px]"
         >
           {drawer}
         </Drawer>
 
-        {/* Permanent Drawer */}
         <Drawer
           variant="permanent"
-          sx={{
-            display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth,
-            },
-          }}
+          className="hidden sm:block [&_.MuiDrawer-paper]:w-[240px]"
           open
         >
           {drawer}
@@ -142,12 +111,7 @@ const Header = ({ children }) => {
 
       <Box
         component="main"
-        sx={{
-          flexGrow: 1,
-          bgcolor: "background.default",
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-        }}
+        className="flex-grow bg-gray-100 p-5 w-[calc(100%-240px)]"
       >
         <Toolbar />
         {children}
