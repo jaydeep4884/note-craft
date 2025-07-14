@@ -23,6 +23,7 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Brand from '../assets/brand.png'
 
 const drawerWidth = 240;
 
@@ -45,7 +46,7 @@ export default function Header({ children }) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("");
     navigate("/");
   };
 
@@ -103,18 +104,28 @@ export default function Header({ children }) {
               <MenuIcon />
             </IconButton>
           )}
-          <Typography variant="h6" noWrap className="flex-grow">
+          <Box className="flex !justify-between gap-2 w-full">
+            <Box className="flex items-center">
+              <img src={Brand} className="h-[35px] w-auto object-contain" alt="Logo" />
+              <Typography noWrap className="!text-[22px] flex-grow">
+                NoteCraft
+              </Typography>
+            </Box>
+            {/* <Typography variant="h6" noWrap className="flex-grow">
             Dashboard {location.pathname}
-          </Typography>
-          <IconButton onClick={handleLogout} color="inherit">
-            <SettingsIcon />
-          </IconButton>
-          <IconButton onClick={handleLogout} color="inherit">
-            <MeetingRoomIcon />
-          </IconButton>
-          <IconButton onClick={handleLogout} color="inherit">
-            <MeetingRoomIcon />
-          </IconButton>
+          </Typography> */}
+            <Box>
+              <IconButton onClick={handleLogout} color="inherit">
+                <SettingsIcon />
+              </IconButton>
+              <IconButton onClick={handleLogout} color="inherit">
+                <MeetingRoomIcon />
+              </IconButton>
+              <IconButton onClick={handleLogout} color="inherit">
+                <MeetingRoomIcon />
+              </IconButton>
+            </Box>
+          </Box>
         </Toolbar>
       </AppBar>
 
