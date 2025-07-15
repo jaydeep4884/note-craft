@@ -14,72 +14,85 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import CategoryIcon from "@mui/icons-material/Category";
-import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
-import ControlPointDuplicateIcon from "@mui/icons-material/ControlPointDuplicate";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Menu as MenuIcon,
+  AppsRounded as AppsRoundedIcon,
+  RefreshRounded as RefreshRoundedIcon,
+  Search as SearchIcon,
+} from "@mui/icons-material";
+import {
+  LightbulbOutlined,
+  NotificationsNoneOutlined,
+  EditOutlined,
+  ArchiveOutlined,
+  DeleteOutlineOutlined,
+} from "@mui/icons-material";
+import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import SettingsIcon from "@mui/icons-material/Settings";
-import Brand from '../assets/brand.png'
+import { Input } from "antd";
+import Brand from "../assets/brand.png";
+import ProfileMenu from "../ui/ProfileMenu";
+import { AnimatePresence, motion } from "framer-motion";
 
 const drawerWidth = 240;
 
 const navItems = [
-  { text: "Dashboard", icon: <SpaceDashboardIcon />, path: "/Dashboard" },
-  { text: "Category", icon: <CategoryIcon />, path: "/Category" },
-  { text: "Sub Category", icon: <ControlPointDuplicateIcon />, path: "/Sub" },
-  { text: "Q & A", icon: <HelpOutlineIcon />, path: "/Queue" },
+  { text: "Notes", icon: <LightbulbOutlined />, path: "/notes" },
+  {
+    text: "Reminders",
+    icon: <NotificationsNoneOutlined />,
+    path: "/reminders",
+  },
+  { text: "Edit labels", icon: <EditOutlined />, path: "/labels" },
+  { text: "Archive", icon: <ArchiveOutlined />, path: "/archive" },
+  { text: "Trash", icon: <DeleteOutlineOutlined />, path: "/trash" },
 ];
 
 export default function Header({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [searchVisible, setSearchVisible] = useState(false);
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+  // const navigate = useNavigate();
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("");
-    navigate("/");
-  };
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const drawer = (
-    <div>
-      <List className="!pt-5">
-        <ListItem>
-          <ListItemText
-            primary="Note Craft"
-            className="text-2xl font-poppins"
-          />
-        </ListItem>
-        {navItems.map((item) => (
+    <Box className="pt-3  w-full">
+      {/* === Brand/Header Section === */}
+      <Box className="sm:mb-12 mb-6"></Box>
+
+      {/* === Navigation Links === */}
+      <List className="space-y-1">
+        {navItems.map(({ text, icon, path }) => (
           <ListItem
-            key={item.text}
+            key={text}
             disablePadding
             component={Link}
-            to={item.path}
+            to={path}
             onClick={!isDesktop ? handleDrawerToggle : undefined}
             className="no-underline text-inherit"
           >
-            <ListItemButton>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+            <ListItemButton className="rounded-md px-3 py-2 hover:bg-gray-100 group transition-all">
+              <ListItemIcon className="text-gray-600 min-w-[36px]">
+                {icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={text}
+                primaryTypographyProps={{
+                  className:
+                    "text-sm text-gray-800 font-medium group-hover:text-black",
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-    </div>
+    </Box>
   );
 
   return (
-    <Box className="flex ">
+    <Box className="flex">
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -87,93 +100,110 @@ export default function Header({ children }) {
           zIndex: (theme) => theme.zIndex.drawer + 1,
           backgroundColor: "white",
           color: "black",
-          boxShadow: "None",
           borderBottom: "1px solid #ddd",
+          boxShadow: "none",
         }}
         className={isDesktop ? "sm:ml-[240px] sm:w-[calc(100%-240px)]" : ""}
       >
-        <Toolbar>
-          {!isDesktop && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              className="mr-2"
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <Box className="flex !justify-between gap-2 w-full">
-            <Box className="flex items-center">
-              <img src={Brand} className="h-[35px] w-auto object-contain" alt="Logo" />
-              <Typography noWrap className="!text-[22px] flex-grow">
+        <Toolbar className="w-full px-4 sm:px-6">
+          <Box className="flex justify-between items-center w-full gap-4">
+            {/* Left: Logo + Menu Toggle for mobile */}
+            <Box className="flex items-center gap-2">
+              {!isDesktop && (
+                <IconButton edge="start" onClick={handleDrawerToggle}>
+                  <MenuIcon fontSize="small" />
+                </IconButton>
+              )}
+              <img src={Brand} alt="Logo" className="h-8 w-auto" />
+              <Typography className="text-lg sm:text-xl text-[#5f6368] font-medium hidden sm:inline">
                 NoteCraft
               </Typography>
             </Box>
-            {/* <Typography variant="h6" noWrap className="flex-grow">
-            Dashboard {location.pathname}
-          </Typography> */}
-            <Box>
-              <IconButton onClick={handleLogout} color="inherit">
-                <SettingsIcon />
+
+            {/* Center: Search bar on desktop */}
+            {isDesktop && (
+              <Box className="flex-1 mx-6 max-w-2xl w-full">
+                <Input
+                  prefix={<SearchIcon className="text-gray-500" />}
+                  placeholder="Search"
+                  size="large"
+                  className="w-full bg-gray-100 rounded-full px-3"
+                  style={{ border: "none" }}
+                />
+              </Box>
+            )}
+
+            {/* Right: Action Icons (both mobile and desktop) */}
+            <Box className="flex items-center gap-2">
+              {!isDesktop && (
+                <IconButton onClick={() => setSearchVisible(true)}>
+                  <SearchIcon fontSize="small" />
+                </IconButton>
+              )}
+              <IconButton onClick={() => window.location.reload()}>
+                <RefreshRoundedIcon fontSize="small" />
               </IconButton>
-              <IconButton onClick={handleLogout} color="inherit">
-                <MeetingRoomIcon />
+              <IconButton>
+                <AppsRoundedIcon fontSize="small" />
               </IconButton>
-              <IconButton onClick={handleLogout} color="inherit">
-                <MeetingRoomIcon />
-              </IconButton>
+              <ProfileMenu small={true} />
             </Box>
           </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Drawer section */}
-      <Box component="nav" aria-label="sidebar">
-        {isDesktop ? (
-          // Permanent drawer on desktop
-          <Drawer
-            variant="permanent"
-            open
-            sx={{
-              width: drawerWidth,
-              flexShrink: 0,
-              [`& .MuiDrawer-paper`]: {
-                width: drawerWidth,
-                boxSizing: "border-box",
-              },
-            }}
-          >
-            {drawer}
-          </Drawer>
-        ) : (
-          // Temporary drawer on mobile
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{ keepMounted: true }}
-            PaperProps={{
-              className: "box-border w-[240px]",
-            }}
-          >
-            {drawer}
-          </Drawer>
-        )}
+      {/* Drawer */}
+      <Box component="nav">
+        <Drawer
+          variant={isDesktop ? "permanent" : "temporary"}
+          open={isDesktop || mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
+          PaperProps={{
+            className: `w-[240px] box-border border-r border-gray-200 sm:pl-4 pl-0 bg-white ${
+              !isDesktop ? "pt-5" : ""
+            }`,
+          }}
+        >
+          {drawer}
+        </Drawer>
       </Box>
 
-      {/* Main content */}
+      {/* Main Content */}
       <Box
         component="main"
-        className="flex-grow !bg-gray-100 "
-        sx={{
-          width: isDesktop ? `calc(100% - ${drawerWidth}px)` : "100%",
-        }}
+        className="flex-grow bg-gray-100 text-black"
+        sx={{ width: isDesktop ? `calc(100% - ${drawerWidth}px)` : "100%" }}
       >
         <Toolbar />
         {children}
       </Box>
+
+      {/* Animated Search Modal */}
+      <AnimatePresence>
+        {searchVisible && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1300] flex items-start justify-center p-4"
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => setSearchVisible(false)}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-4 w-full max-w-lg shadow-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Input.Search
+                placeholder="Search..."
+                size="large"
+                className="w-full"
+                autoFocus
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Box>
   );
 }
